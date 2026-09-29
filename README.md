@@ -1,2 +1,2 @@
 # Aquapulse
-AquaPulse AI is an Edge-AI and IoT-driven precision irrigation platform that automates farm water management, eliminating waste and boosting crop yields for smallholder farmers
+AquaPulse AI addresses the global agricultural water crisis by replacing wasteful flood irrigation with intelligent, automated root-zone moisture management. Combining low-cost field sensors with localized edge-computing, AquaPulse AI monitors soil conditions in real time and automatically activates micro-irrigation pumps only when crops need water. Designed offline-first for remote rural deployment, the platform reduces farm water consumption by up to 40%, cuts pumping electricity costs, and increases crop yields by preventing overwatering and nutrient loss.

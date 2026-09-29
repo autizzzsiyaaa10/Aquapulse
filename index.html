@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaPulse AI | Smart Water Management</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-surface-hover: #334155;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #0ea5e9;
+            --primary-glow: rgba(14, 165, 233, 0.25);
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.2);
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .brand-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .brand-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* --- DASHBOARD GRID --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: repeat(1, 1fr); }
+        }
+
+        /* --- CARDS --- */
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: #475569;
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        .metric-unit {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-left: 0.2rem;
+        }
+
+        .metric-footer {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .text-success { color: var(--success); }
+        .text-warning { color: var(--warning); }
+        .text-danger { color: var(--danger); }
+
+        /* Gauge Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #0f172a;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            width: 38%;
+            transition: width 0.4s ease-in-out, background 0.3s;
+        }
+
+        /* --- CONTROLS SECTION --- */
+        .controls-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(180deg, var(--bg-surface) 0%, #172033 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .controls-info h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .controls-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: var(--text-main);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        /* --- TABLE SECTION --- */
+        .table-card {
+            grid-column: 1 / -1;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 0.85rem 1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Table Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-info { background: rgba(14, 165, 233, 0.15); color: #38bdf8; }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Navigation Header -->
+        <header class="header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="brand-title">AquaPulse AI</div>
+                    <div class="brand-subtitle">Smart Precision Irrigation Control</div>
+                </div>
+            </div>
+            <div class="system-status">
+                <span class="pulse-dot" id="systemPulse"></span>
+                <span id="systemStatusText">Telemetry Online (Local Node)</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Layout -->
+        <main class="dashboard-grid">
+            
+            <!-- Sensor 1: Soil Moisture -->
+            <div class="card">
+                <div>
+                    <div class="card-header">
+                        <span class="card-title">Soil Moisture Zone A</span>
+                        <svg width="20" height="20" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="metric-value">
+                        <span id="moistureVal">38</span><span class="metric-unit">%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="moistureBar"></div>
+                    </div>
+                </div>
+                <div class="metric-footer" id="moistureStatus">
+                    Optimal target: 35% – 50%
+                </div>
+            </div>
+
+            <!-- Sensor 2: Pump Automation -->
+            <div class="card">
+                <div>
+                    <div class="card-header">
+                        <span class="card-title">Pump Actuator</span>
+                        <svg width="20" height="20" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <div class="metric-value" id="pumpStatus">OFF</div>
+                </div>
+                <div class="metric-footer">
+                    <span>Threshold:</span>
+                    <span style="color: var(--text-main); font-weight: 500;">Auto-start &lt; 30%</span>
+                </div>
+            </div>
+
+            <!-- Sensor 3: Conservation Analytics -->
+            <div class="card">
+                <div>
+                    <div class="card-header">
+                        <span class="card-title">Water Conserved (Today)</span>
+                        <svg width="20" height="20" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <div class="metric-value">
+                        <span id="waterSavedVal">1,240</span><span class="metric-unit">L</span>
+                    </div>
+                </div>
+                <div class="metric-footer text-success">
+                    <span>↑ +38% efficiency vs traditional flood</span>
+                </div>
+            </div>
+
+            <!-- Interactive Simulation Controls -->
+            <section class="controls-card">
+                <div class="controls-info">
+                    <h4>Automation Override & Simulation</h4>
+                    <p>Trigger automated soil dehydration to test real-time valve response algorithms.</p>
+                </div>
+                <div class="btn-group">
+                    <button class="btn" onclick="simulateDrySoil()">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        Simulate Dry Soil (&lt;30%)
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetSimulation()">Reset System</button>
+                </div>
+            </section>
+
+            <!-- Real-time Telemetry Logs -->
+            <section class="table-card">
+                <div class="table-header">
+                    <h3 style="font-size: 1.1rem; font-weight: 600;">Live Telemetry Stream</h3>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);" id="logCount">1 entry</span>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Moisture Level</th>
+                                <th>Automated Action</th>
+                                <th>Flow Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logTableBody">
+                            <tr>
+                                <td>10:00:00 AM</td>
+                                <td>38%</td>
+                                <td><span class="badge badge-info">Monitoring Idle</span></td>
+                                <td>0 L/min</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        let moisture = 38;
+        let pumpActive = false;
+        let waterSaved = 1240;
+        let activeInterval = null;
+
+        function updateUI() {
+            // Update Moisture Displays
+            const moistureValEl = document.getElementById('moistureVal');
+            const moistureBarEl = document.getElementById('moistureBar');
+            const moistureStatusEl = document.getElementById('moistureStatus');
+
+            moistureValEl.innerText = moisture;
+            moistureBarEl.style.width = `${Math.min(moisture, 100)}%`;
+
+            if (moisture < 30) {
+                moistureBarEl.style.background = 'var(--danger)';
+                moistureStatusEl.innerHTML = `<span class="text-danger">● Moisture Critical (&lt;30%)</span>`;
+            } else if (moisture > 50) {
+                moistureBarEl.style.background = 'var(--primary)';
+                moistureStatusEl.innerHTML = `<span class="text-info">● Fully Hydrated</span>`;
+            } else {
+                moistureBarEl.style.background = 'linear-gradient(90deg, var(--primary), var(--success))';
+                moistureStatusEl.innerHTML = `Optimal target: 35% – 50%`;
+            }
+
+            // Update Water Savings
+            document.getElementById('waterSavedVal').innerText = waterSaved.toLocaleString();
+
+            // Update Pump Status
+            const pumpStatusEl = document.getElementById('pumpStatus');
+            if (pumpActive) {
+                pumpStatusEl.innerText = "IRRIGATING";
+                pumpStatusEl.style.color = "var(--success)";
+            } else {
+                pumpStatusEl.innerText = "OFF";
+                pumpStatusEl.style.color = "var(--text-main)";
+            }
+
+            updateLogCount();
+        }
+
+        function logAction(action, flowRate, badgeType = 'badge-info') {
+            const tbody = document.getElementById('logTableBody');
+            const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${now}</td>
+                <td>${moisture}%</td>
+                <td><span class="badge ${badgeType}">${action}</span></td>
+                <td>${flowRate}</td>
+            `;
+            tbody.insertBefore(tr, tbody.firstChild);
+            updateLogCount();
+        }
+
+        function updateLogCount() {
+            const count = document.getElementById('logTableBody').children.length;
+            document.getElementById('logCount').innerText = `${count} ${count === 1 ? 'entry' : 'entries'}`;
+        }
+
+        function simulateDrySoil() {
+            if (activeInterval) clearInterval(activeInterval);
+
+            moisture = 22; // Drop moisture below threshold
+            if (!pumpActive) {
+                pumpActive = true;
+                logAction("Irrigation Activated", "45 L/min", "badge-warning");
+            }
+            updateUI();
+
+            // Gradual soil replenishment simulation
+            activeInterval = setInterval(() => {
+                if (moisture < 45) {
+                    moisture += 4;
+                    waterSaved += 12;
+                    updateUI();
+                } else {
+                    pumpActive = false;
+                    logAction("Target Moisture Reached", "0 L/min", "badge-success");
+                    updateUI();
+                    clearInterval(activeInterval);
+                    activeInterval = null;
+                }
+            }, 1000);
+        }
+
+        function resetSimulation() {
+            if (activeInterval) clearInterval(activeInterval);
+            activeInterval = null;
+
+            moisture = 38;
+            pumpActive = false;
+            updateUI();
+            logAction("System Reset Triggered", "0 L/min", "badge-info");
+        }
+    </script>
+</body>
+</html>
